@@ -11,6 +11,26 @@ export class Helper {
     .setTitle('Commands')
     .addFields()
     .setTimestamp();
+
+
+  static makeMsgEmbed(title: string, description?: string, fields?: []) {
+    const msg = new MessageEmbed()
+      .setColor(Helper.RANDOM_COLOR)
+      .attachFiles(['assets/vinyl.png'])
+      .setThumbnail('attachment://vinyl.png')
+      .setTitle(title)
+      .setTimestamp();
+
+    if (description) {
+      msg.setDescription(description);
+    }
+
+    if (fields) {
+      msg.addFields(fields)
+    }
+
+    return msg;
+  }
 }
 
 
