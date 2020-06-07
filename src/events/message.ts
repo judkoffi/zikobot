@@ -22,21 +22,25 @@ async function play(voiceChannel: VoiceChannel, message: Message, url: string): 
   msg.setImage(info.videoDetails.embed.iframeUrl);
   msg.addField('title', info.videoDetails.title);
   message.reply(msg);
-  dispatcher.on('end', () => playFromQueue(voiceChannel, message));
+  dispatcher.on('finish', async () => await playFromQueue(voiceChannel, message));
 }
 
 async function playFromQueue(voiceChannel: VoiceChannel, message: Message): Promise<void> {
-  if (!queue.peek())
+  if (!queue.peek()) {
+    message.member?.voice.channel?.leave();
     return;
+  }
 
   const entry = queue.dequeue();
-  await play(voiceChannel, message, entry.getUrl());
+  console.log(entry.getUrl());
+  play(voiceChannel, message, entry.getUrl());
 }
 
 function queueCmdHandler(message: Message): void {
   const args = message.content.split(' ');
   if (args.length < 2) {
-    message.reply(Helper.makeMsgEmbed('usage', '```!queue {video url}```'));
+    const str = `${Helper.PREFIX}queue {video url}`;
+    message.reply(Helper.makeMsgEmbed('usage', str));
     return;
   }
 
@@ -68,8 +72,11 @@ async function playCmdHandler(message: Message) {
     return;
 
   const args = message.content.split(' ');
-  if (args.length < 2)// send usage
+  if (args.length < 2) {
+    const str = `${Helper.PREFIX}play {video url}`;
+    message.reply(Helper.makeMsgEmbed('usage', str));
     return;
+  }
 
   const url = args[1];
   if (!urlRegex.default().test(url))
@@ -109,14 +116,14 @@ export async function messageHandler(message: Message, client: Client) {
   }
 
   if (message.content.startsWith('?pause')) {
-    let voiceChannel = message.member?.voice.channel;
-    const connection = await voiceChannel.join();
-    connection.dispatcher.pause();
+    let voiceChannel = message.member?.voice?.channel;
+    const connection = await voiceChannel?.join();
+    connection?.dispatcher?.pause();
   }
 
   if (message.content.startsWith('?resume')) {
-    let voiceChannel = message.member?.voice.channel;
-    const connection = await voiceChannel.join();
-    connection.dispatcher.resume();
+    let voiceChannel = message.member?.voice?.channel;
+    const connection = await voiceChannel?.join();
+    connection?.dispatcher?.resume();
   }
 }
