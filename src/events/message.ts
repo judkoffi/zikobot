@@ -33,6 +33,52 @@ async function playFromQueue(voiceChannel: VoiceChannel, message: Message): Prom
   await play(voiceChannel, message, entry.getUrl());
 }
 
+function queueCmdHandler(message: Message): void {
+  const args = message.content.split(' ');
+  if (args.length < 2) {
+    message.reply(Helper.makeMsgEmbed('usage', '```!queue {video url}```'));
+    return;
+  }
+
+  const url = args[1];
+  if (!urlRegex.default().test(url)) {
+    message.reply(Helper.makeMsgEmbed('usage', '``` url invalid```'));
+    return;
+  }
+
+  const result = queue.add(new Entry(url, message.author.tag));
+  result ? message.reply('```added```') : message.reply('```no added```');
+}
+
+async function showCmdHandler(message: Message) {
+  if (queue.isEmpty()) {
+    message.reply(Helper.makeMsgEmbed('result', 'Playlist is empty'));
+    return;
+  }
+
+  let msg = Helper.makeMsgEmbed('Playlist content', '');
+  queue.forEach((entry) => {
+    msg.addField(entry.getUrl(), 'by ' + entry.getAuthor());
+  });
+  message.reply(msg);
+}
+
+async function playCmdHandler(message: Message) {
+  if (message.channel.type !== 'text')
+    return;
+
+  const args = message.content.split(' ');
+  if (args.length < 2)// send usage
+    return;
+
+  const url = args[1];
+  if (!urlRegex.default().test(url))
+    return;
+
+  let voiceChannel = message.member?.voice.channel;
+  await play(voiceChannel, message, url);
+}
+
 export async function messageHandler(message: Message, client: Client) {
 
   if (message.content.startsWith('?help')) {
@@ -40,42 +86,11 @@ export async function messageHandler(message: Message, client: Client) {
   }
 
   if (message.content.startsWith('?queue')) {
-    const args = message.content.split(' ');
-    if (args.length < 2) {
-      message.reply(Helper.makeMsgEmbed('usage', '```!queue {video url}```'));
-      return;
-    }
-
-    const url = args[1];
-    if (!urlRegex.default().test(url)) {
-      message.reply(Helper.makeMsgEmbed('usage', '``` url invalid```'));
-      return;
-    }
-
-    const result = queue.add(new Entry(url, message.author.tag));
-    result ? message.reply('```added```') : message.reply('```no added```');
+    queueCmdHandler(message);
   }
-
 
   if (message.content.startsWith('?show')) {
-    if (queue.isEmpty()) {
-      message.reply(Helper.makeMsgEmbed('result', 'Playlist is empty'));
-      return;
-    }
-
-    let msg = Helper.makeMsgEmbed('Playlist content', '');
-    queue.forEach((entry) => {
-      msg.addField(entry.getUrl(), 'by ' + entry.getAuthor());
-    });
-    message.reply(msg);
-  }
-
-  if (message.content.startsWith('?playlist') || message.content.startsWith('?next')) {
-    if (message.channel.type !== 'text')
-      return;
-
-    let voiceChannel = message.member?.voice.channel;
-    await playFromQueue(voiceChannel, message);
+    showCmdHandler(message);
   }
 
   if (message.content.startsWith('?stop')) {
@@ -83,19 +98,14 @@ export async function messageHandler(message: Message, client: Client) {
   }
 
   if (message.content.startsWith('?play')) {
+    playCmdHandler(message);
+  }
+
+  if (message.content.startsWith('?playlist') || message.content.startsWith('?next')) {
     if (message.channel.type !== 'text')
       return;
-
-    const args = message.content.split(' ');
-    if (args.length < 2)// send usage
-      return;
-
-    const url = args[1];
-    if (!urlRegex.default().test(url))
-      return;
-
     let voiceChannel = message.member?.voice.channel;
-    await play(voiceChannel, message, url);
+    await playFromQueue(voiceChannel, message);
   }
 
   if (message.content.startsWith('?pause')) {

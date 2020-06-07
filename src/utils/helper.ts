@@ -9,7 +9,17 @@ export class Helper {
     .attachFiles(['assets/vinyl.png'])
     .setThumbnail('attachment://vinyl.png')
     .setTitle('Commands')
-    .addFields()
+    .addFields(
+      { name: '?help', value: 'Display help' },
+      { name: '?queue {url}', value: 'Add new video in playlist' },
+      { name: '?play {url}', value: 'Play music from given url' },
+      { name: '?playlist', value: 'Start playlist listening' },
+      { name: '?show', value: 'Show content of current playlist', inline: true },
+      { name: '?stop', value: 'Stop music and leave voice channel', inline: true },
+      { name: '?next', value: 'Play next song in playlist', inline: true },
+      { name: '?pause', value: 'Pause current playing music', inline: true },
+      { name: '?resume', value: 'Play paused music', inline: true }
+    )
     .setTimestamp();
 
 
