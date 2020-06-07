@@ -60,7 +60,7 @@ async function showCmdHandler(message: Message) {
     return;
   }
 
-  let msg = Helper.makeMsgEmbed('Playlist content', '');
+  const msg = Helper.makeMsgEmbed('Playlist content', '');
   queue.forEach((entry) => {
     msg.addField(entry.getUrl(), 'by ' + entry.getAuthor());
   });
@@ -82,7 +82,7 @@ async function playCmdHandler(message: Message) {
   if (!urlRegex.default().test(url))
     return;
 
-  let voiceChannel = message.member?.voice.channel;
+  const voiceChannel = message.member?.voice.channel;
   await play(voiceChannel, message, url);
 }
 
@@ -111,18 +111,18 @@ export async function messageHandler(message: Message, client: Client) {
   if (message.content.startsWith('?playlist') || message.content.startsWith('?next')) {
     if (message.channel.type !== 'text')
       return;
-    let voiceChannel = message.member?.voice.channel;
+    const voiceChannel = message.member?.voice.channel;
     await playFromQueue(voiceChannel, message);
   }
 
   if (message.content.startsWith('?pause')) {
-    let voiceChannel = message.member?.voice?.channel;
+    const voiceChannel = message.member?.voice?.channel;
     const connection = await voiceChannel?.join();
     connection?.dispatcher?.pause();
   }
 
   if (message.content.startsWith('?resume')) {
-    let voiceChannel = message.member?.voice?.channel;
+    const voiceChannel = message.member?.voice?.channel;
     const connection = await voiceChannel?.join();
     connection?.dispatcher?.resume();
   }
