@@ -4,7 +4,9 @@
 
 Discord bot which can play music from youtube   
 Commands prefix is ```?```  
+
 ## Supported commands are:
+```
 - ?help: display help
 - ?queue {url}: add new video in playlist
 - ?play {url}: play music from given url
@@ -14,3 +16,4 @@ Commands prefix is ```?```
 - ?next: play next song in playlist
 - ?pause: pause current playing music
 - ?resume: play paused music
+```
