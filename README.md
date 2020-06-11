@@ -17,3 +17,32 @@ Commands prefix is ```?```
 - ?pause: pause current playing music
 - ?resume: play paused music
 ```
+
+## Installation
+
+### packages
+
+Using [yarn](https://yarnpkg.com/) to get necessary dependencies:
+
+    $ yarn install 
+
+---
+
+### token
+- create file named ```.env``` at root of repository folder  
+- add the following line:
+```
+BOT_TOKEN=YOUR_BOT_TOKEN
+```
+- replace ```YOUR_BOT_TOKEN``` by real token
+
+### run
+- execute following command to run bot
+```
+$ yarn start 
+```
+
+- execute following command to run bot with live reload
+```
+$ yarn run dev
+```
