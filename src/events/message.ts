@@ -108,7 +108,7 @@ export async function messageHandler(message: Message, client: Client) {
     playCmdHandler(message);
   }
 
-  if (message.content.startsWith('?playlist') || message.content.startsWith('?next')) {
+  if (message.content.startsWith('?start') || message.content.startsWith('?next')) {
     if (message.channel.type !== 'text')
       return;
     const voiceChannel = message.member?.voice.channel;

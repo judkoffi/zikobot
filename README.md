@@ -10,7 +10,7 @@ Commands prefix is ```?```
 - ?help: display help
 - ?queue {url}: add new video in playlist
 - ?play {url}: play music from given url
-- ?playlist: start playlist listening
+- ?start: start playlist listening
 - ?show: show content of current playlist
 - ?stop: stop music and leave voice channel
 - ?next: play next song in playlist
