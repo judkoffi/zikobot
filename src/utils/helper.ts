@@ -40,10 +40,6 @@ export class Helper {
     if (fields) {
       msg.addFields(fields)
     }
-
     return msg;
   }
 }
-
-
-
