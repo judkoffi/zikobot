@@ -1,11 +1,87 @@
 import { Client, Message, VoiceChannel } from 'discord.js';
 import { Queue } from 'typescript-collections';
 import * as urlRegex from 'url-regex';
+import yts from 'yt-search';
 import * as ytdl from 'ytdl-core';
 import { Entry } from '../model/entry';
 import { getHelpMessage, Helper, makeMsgEmbed } from '../utils/helper';
 
 const queue: Queue<Entry> = new Queue();
+
+
+export async function messageHandler(message: Message, client: Client) {
+
+  if (message.content.startsWith('?help')) {
+    message.reply(getHelpMessage());
+  }
+
+  if (message.content.startsWith('?queue')) {
+    queueCmdHandler(message);
+  }
+
+  if (message.content.startsWith('?show')) {
+    showCmdHandler(message);
+  }
+
+  if (message.content.startsWith('?stop')) {
+    message?.member?.voice?.channel?.leave();
+    message.react('🖖');
+  }
+
+  if (message.content.startsWith('?play')) {
+    playCmdHandler(message);
+  }
+
+  if (message.content.startsWith('?start') || message.content.startsWith('?next')) {
+    if (message.channel.type !== 'text')
+      return;
+    const voiceChannel = message.member?.voice.channel;
+    await playFromQueue(voiceChannel, message);
+  }
+
+  if (message.content.startsWith('?pause')) {
+    const voiceChannel = message.member?.voice?.channel;
+    const connection = await voiceChannel?.join();
+    connection?.dispatcher?.pause();
+  }
+
+  if (message.content.startsWith('?resume')) {
+    const voiceChannel = message.member?.voice?.channel;
+    const connection = await voiceChannel?.join();
+    connection?.dispatcher?.resume();
+  }
+
+  if (message.content.startsWith('?search')) {
+    if (message.channel.type !== 'text')
+      return;
+    searchCmdHandler(message);
+  }
+}
+
+
+async function searchCmdHandler(message: Message) {
+  if (message.channel.type !== 'text')
+    return;
+
+  const args = message.content.split(' ');
+  if (args.length < 2) {
+    const str = `${Helper.PREFIX}search {video title}`;
+    message.reply(makeMsgEmbed('usage', str));
+    return;
+  }
+
+  let title = args.slice(1, args.length).join(" ");
+  console.log(title);
+
+  const searchResult = await yts(title);
+  const videos = searchResult.videos.slice(0, 5); //keep 5 first links
+  const msg = makeMsgEmbed('Search result', '');
+  videos.forEach((v) => {
+    msg.addField(`${v.title} by ${v.author.name}`, `${v.url}`);
+  });
+  message.react('✅');
+  message.reply(msg);
+}
 
 async function play(voiceChannel: VoiceChannel, message: Message, url: string): Promise<void> {
   if (!voiceChannel) {
@@ -21,6 +97,7 @@ async function play(voiceChannel: VoiceChannel, message: Message, url: string): 
   const msg = makeMsgEmbed('Current playing');
   msg.setImage(info.videoDetails.embed.iframeUrl);
   msg.addField('title', info.videoDetails.title);
+  message.react('✅');
   message.reply(msg);
   dispatcher.on('finish', async () => await playFromQueue(voiceChannel, message));
 }
@@ -83,52 +160,4 @@ async function playCmdHandler(message: Message) {
 
   const voiceChannel = message.member?.voice.channel;
   await play(voiceChannel, message, url);
-}
-
-export async function messageHandler(message: Message, client: Client) {
-
-  if (message.content.startsWith('?help')) {
-    message.reply(getHelpMessage());
-  }
-
-  if (message.content.startsWith('?queue')) {
-    queueCmdHandler(message);
-  }
-
-  if (message.content.startsWith('?show')) {
-    showCmdHandler(message);
-  }
-
-  if (message.content.startsWith('?stop')) {
-    message.member?.voice.channel?.leave();
-  }
-
-  if (message.content.startsWith('?play')) {
-    playCmdHandler(message);
-  }
-
-  if (message.content.startsWith('?start') || message.content.startsWith('?next')) {
-    if (message.channel.type !== 'text')
-      return;
-    const voiceChannel = message.member?.voice.channel;
-    await playFromQueue(voiceChannel, message);
-  }
-
-  if (message.content.startsWith('?pause')) {
-    const voiceChannel = message.member?.voice?.channel;
-    const connection = await voiceChannel?.join();
-    connection?.dispatcher?.pause();
-  }
-
-  if (message.content.startsWith('?resume')) {
-    const voiceChannel = message.member?.voice?.channel;
-    const connection = await voiceChannel?.join();
-    connection?.dispatcher?.resume();
-  }
-
-  if (message.content.startsWith('?create')) {
-    if (message.channel.type !== 'text')
-      return;
-    // createPlaylistHanlder()
-  }
 }
