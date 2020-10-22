@@ -22,6 +22,7 @@ export class Helper {
     { name: `${Helper.PREFIX}search {title}`, value: 'Search video by title' },
     { name: `${Helper.PREFIX}play {url}`, value: 'Play music from given url' },
     { name: `${Helper.PREFIX}queue {url}`, value: 'Add new video in playlist' },
+    { name: `${Helper.PREFIX}queuefrom {url1, url2, url3, ..., urln}`, value: 'Build queue from all urls' },
     { name: `${Helper.PREFIX}start`, value: 'Start playlist listening' },
     { name: `${Helper.PREFIX}show`, value: 'Show content of current playlist', inline: true },
     { name: `${Helper.PREFIX}stop`, value: 'Stop music and leave voice channel', inline: true },
