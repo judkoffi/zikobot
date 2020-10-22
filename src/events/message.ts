@@ -8,7 +8,6 @@ import { getHelpMessage, Helper, makeMsgEmbed } from '../utils/helper';
 
 const queue: Queue<Entry> = new Queue();
 
-
 export async function messageHandler(message: Message, client: Client) {
 
   if (message.content.startsWith('?help')) {
@@ -71,8 +70,6 @@ async function searchCmdHandler(message: Message) {
   }
 
   let title = args.slice(1, args.length).join(" ");
-  console.log(title);
-
   const searchResult = await yts(title);
   const videos = searchResult.videos.slice(0, 5); //keep 5 first links
   const msg = makeMsgEmbed('Search result', '');

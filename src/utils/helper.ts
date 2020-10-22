@@ -4,11 +4,6 @@ export function getRandomColor(): ColorResolvable {
   return Math.floor(Math.random() * 16777215).toString(16);
 }
 
-
-
-
-
-
 export function getHelpMessage(): MessageEmbed {
   return new MessageEmbed()
     .setColor(getRandomColor())
