@@ -8,6 +8,7 @@ Commands prefix is ```?```
 ## Supported commands are:
 ```
 - ?help: display help
+- ?search {title}: search video by title
 - ?queue {url}: add new video in playlist
 - ?play {url}: play music from given url
 - ?start: start playlist listening
