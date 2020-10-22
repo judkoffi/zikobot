@@ -3,7 +3,7 @@ import { Queue } from 'typescript-collections';
 import * as urlRegex from 'url-regex';
 import * as ytdl from 'ytdl-core';
 import { Entry } from '../model/entry';
-import { Helper } from '../utils/helper';
+import { getHelpMessage, Helper, makeMsgEmbed } from '../utils/helper';
 
 const queue: Queue<Entry> = new Queue();
 
@@ -18,7 +18,7 @@ async function play(voiceChannel: VoiceChannel, message: Message, url: string): 
   const dispatcher = connection.play(stream);
   dispatcher.setVolumeLogarithmic(0.5);
   const info = await ytdl.getBasicInfo(url);
-  const msg = Helper.makeMsgEmbed('Current playing');
+  const msg = makeMsgEmbed('Current playing');
   msg.setImage(info.videoDetails.embed.iframeUrl);
   msg.addField('title', info.videoDetails.title);
   message.reply(msg);
@@ -40,27 +40,26 @@ function queueCmdHandler(message: Message): void {
   const args = message.content.split(' ');
   if (args.length < 2) {
     const str = `${Helper.PREFIX}queue {video url}`;
-    message.reply(Helper.makeMsgEmbed('usage', str));
+    message.reply(makeMsgEmbed('usage', str));
     return;
   }
 
   const url = args[1];
   if (!urlRegex.default().test(url)) {
-    message.reply(Helper.makeMsgEmbed('usage', '``` url invalid```'));
+    message.reply(makeMsgEmbed('usage', '``` url invalid```'));
     return;
   }
-
   const result = queue.add(new Entry(url, message.author.tag));
-  result ? message.reply('```added```') : message.reply('```no added```');
+  result ? message.react('✅') : message.react('❎');
 }
 
 async function showCmdHandler(message: Message) {
   if (queue.isEmpty()) {
-    message.reply(Helper.makeMsgEmbed('result', 'Playlist is empty'));
+    message.reply(makeMsgEmbed('result', 'Playlist is empty'));
     return;
   }
 
-  const msg = Helper.makeMsgEmbed('Playlist content', '');
+  const msg = makeMsgEmbed('Playlist content', '');
   queue.forEach((entry) => {
     msg.addField(entry.getUrl(), 'by ' + entry.getAuthor());
   });
@@ -74,7 +73,7 @@ async function playCmdHandler(message: Message) {
   const args = message.content.split(' ');
   if (args.length < 2) {
     const str = `${Helper.PREFIX}play {video url}`;
-    message.reply(Helper.makeMsgEmbed('usage', str));
+    message.reply(makeMsgEmbed('usage', str));
     return;
   }
 
@@ -89,7 +88,7 @@ async function playCmdHandler(message: Message) {
 export async function messageHandler(message: Message, client: Client) {
 
   if (message.content.startsWith('?help')) {
-    message.reply(Helper.HELP_MSG);
+    message.reply(getHelpMessage());
   }
 
   if (message.content.startsWith('?queue')) {
@@ -125,5 +124,11 @@ export async function messageHandler(message: Message, client: Client) {
     const voiceChannel = message.member?.voice?.channel;
     const connection = await voiceChannel?.join();
     connection?.dispatcher?.resume();
+  }
+
+  if (message.content.startsWith('?create')) {
+    if (message.channel.type !== 'text')
+      return;
+    // createPlaylistHanlder()
   }
 }
