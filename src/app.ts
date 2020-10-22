@@ -2,6 +2,7 @@ import { Client } from 'discord.js';
 import { config } from 'dotenv';
 import { readyHandler } from './events/ready';
 import { messageHandler } from './events/message';
+import { Queue } from 'typescript-collections';
 
 config();
 

@@ -4,7 +4,7 @@ import { Entry } from '../model/entry';
 import { getHelpMessage, Helper } from '../utils/helper';
 import { playCmdHandler, playFromQueue, queueCmdHandler, searchCmdHandler, showCmdHandler, queueFromCmdHandler } from './handler';
 
-let queue: Queue<Entry> = new Queue();
+const queue: Queue<Entry> = new Queue();
 
 export async function messageHandler(message: Message, client: Client) {
   if (message.channel.type !== 'text')

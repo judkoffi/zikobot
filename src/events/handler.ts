@@ -10,14 +10,15 @@ import { Helper, makeMsgEmbed } from '../utils/helper';
 export async function searchCmdHandler(message: Message) {
   const args = message.content.split(' ');
   if (args.length < 2) {
-    const str = `${Helper.PREFIX}search {video title}`;
+    const str = `${Helper.PREFIX}search text text text .... text`;
     message.reply(makeMsgEmbed('usage', str));
+    message.react('🚨');
     return;
   }
 
-  let title = args.slice(1, args.length).join(" ");
+  const title = args.slice(1, args.length).join(" ");
   const searchResult = await yts(title);
-  const videos = searchResult.videos.slice(0, 5); //keep 5 first links
+  const videos = searchResult.videos.slice(0, 5); // keep 5 first links
   const msg = makeMsgEmbed('Search result', '');
   videos.forEach((v) => {
     msg.addField(`${v.title} by ${v.author.name}`, `${v.url}`);
@@ -28,7 +29,7 @@ export async function searchCmdHandler(message: Message) {
 
 export async function play(voiceChannel: VoiceChannel, message: Message, url: string, queue: Queue<Entry>): Promise<void> {
   if (!voiceChannel) {
-    message.reply('please join a voice channel first!');
+    message.reply('Please join a voice channel first!');
     return;
   }
 
@@ -52,7 +53,6 @@ export async function playFromQueue(voiceChannel: VoiceChannel, message: Message
   }
 
   const entry = queue.dequeue();
-  console.log(entry.getUrl());
   play(voiceChannel, message, entry.getUrl(), queue);
 }
 
@@ -76,27 +76,24 @@ export function queueCmdHandler(message: Message, queue: Queue<Entry>): void {
 export function queueFromCmdHandler(message: Message, queue: Queue<Entry>): void {
   const args = message.content.split(' ');
   if (args.length < 2) {
-    const str = `${Helper.PREFIX}queuefrom {video url1, video url2, ..., video url 3}`;
+    const str = `${Helper.PREFIX}queuefrom video url1, video url2, ..., video url 3`;
     message.reply(makeMsgEmbed('usage', str));
     return;
   }
 
-  for (let i = 0; i < args.length; i++) {
-    console.log(args[i]);
-  }
+  let success: boolean = true;
 
   for (let i = 2; i < args.length; i++) {
-    let url = args[i].split(',')[0];
-    // console.log('fedfq ' + url);
+    const url = args[i].split(',')[0];
     if (urlRegex.default().test(url)) {
-      queue.add(new Entry(url, message.author.tag));
+      success &&= queue.add(new Entry(url, message.author.tag));
     }
   }
-  //result ? message.react('✅') : message.react('❎');
+  success ? message.react('✅') : message.react('❎');
 }
 
 
-export async function showCmdHandler(message: Message, queue: Queue<Entry>) {
+export function showCmdHandler(message: Message, queue: Queue<Entry>) {
   if (queue.isEmpty()) {
     message.reply(makeMsgEmbed('result', 'Playlist is empty'));
     return;
