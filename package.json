@@ -8,7 +8,7 @@
     "dev": "npm run build:live",
     "start": "npm run build && node dist/app.js",
     "build": "tsc -p .",
-    "clean": "rm -r dist/",
+    "clean": "rm -r dist/ && rm -r node_modules/ && rm package-lock.json",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/app.ts"
   },
   "dependencies": {

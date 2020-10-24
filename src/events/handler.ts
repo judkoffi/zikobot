@@ -34,8 +34,8 @@ export async function play(voiceChannel: VoiceChannel, message: Message, url: st
     return;
   }
 
-  let connection = await voiceChannel.join();
-  let dispatcher = connection.play(await ytdl(url), { type: 'opus' });
+  const connection = await voiceChannel.join();
+  const dispatcher = connection.play(await ytdl(url), { type: 'opus' });
   const info = await ytdl.getBasicInfo(url);
 
   dispatcher.setVolumeLogarithmic(0.5);
