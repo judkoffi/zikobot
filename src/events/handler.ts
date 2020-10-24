@@ -39,9 +39,9 @@ export async function play(voiceChannel: VoiceChannel, message: Message, url: st
     { filter: 'audioonly', quality: 'highestaudio' }),
     { type: 'opus' }
   )
-    .on('speaking', (speaking) => {
+    .on('speaking', async (speaking) => {
       if (!speaking) {
-        async () => await playFromQueue(voiceChannel, message, queue)
+        await playFromQueue(voiceChannel, message, queue);
       }
     })
     .setVolumeLogarithmic(0.5);

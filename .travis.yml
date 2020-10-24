@@ -5,5 +5,5 @@ node_js:
 os:
   - linux
 
-script: 
-  - yarn install && yarn build
+script:
+  - npm install && npm build
