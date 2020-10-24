@@ -35,12 +35,17 @@ export async function play(voiceChannel: VoiceChannel, message: Message, url: st
   }
 
   const connection = await voiceChannel.join();
-  const dispatcher = connection.play(await ytdl(url), { type: 'opus' });
-  const info = await ytdl.getBasicInfo(url);
-
-  dispatcher.setVolumeLogarithmic(0.5);
+  connection.play(await ytdl(url,
+    { filter: 'audioonly', quality: 'highestaudio' }),
+    { type: 'opus' }
+  )
+    .on('speaking', (speaking) => {
+      if (!speaking) {
+        async () => await playFromQueue(voiceChannel, message, queue)
+      }
+    })
+    .setVolumeLogarithmic(0.5);
   message.react('✅');
-  dispatcher.on('finish', async () => await playFromQueue(voiceChannel, message, queue));
 }
 
 export async function playFromQueue(voiceChannel: VoiceChannel, message: Message, queue: Queue<VideoEntry>): Promise<void> {
