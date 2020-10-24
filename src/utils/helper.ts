@@ -28,6 +28,7 @@ export class Helper {
     { name: `${Helper.PREFIX}stop`, value: 'Stop music and leave voice channel', inline: true },
     { name: `${Helper.PREFIX}next`, value: 'Play next song in playlist', inline: true },
     { name: `${Helper.PREFIX}pause`, value: 'Pause current playing music', inline: true },
+    { name: `${Helper.PREFIX}pop`, value: 'Remove first music from current playing', inline: true },
     { name: `${Helper.PREFIX}resume`, value: 'Play paused music', inline: true },
   ];
 }

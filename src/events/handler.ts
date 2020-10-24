@@ -3,9 +3,10 @@ import { Message, VoiceChannel } from 'discord.js';
 import { Queue } from 'typescript-collections';
 import * as urlRegex from 'url-regex';
 import yts from 'yt-search';
-import * as ytdl from 'ytdl-core';
+import ytdl from 'ytdl-core-discord';
 import { VideoEntry } from '../model/entry';
 import { Helper, makeMsgEmbed } from '../utils/helper';
+
 
 export async function searchCmdHandler(message: Message) {
   const args = message.content.split(' ');
@@ -33,16 +34,12 @@ export async function play(voiceChannel: VoiceChannel, message: Message, url: st
     return;
   }
 
-  const connection = await voiceChannel.join();
-  const stream = ytdl.default(url, { filter: 'audioonly', });
-  const dispatcher = connection.play(stream);
-  dispatcher.setVolumeLogarithmic(0.5);
+  let connection = await voiceChannel.join();
+  let dispatcher = connection.play(await ytdl(url), { type: 'opus' });
   const info = await ytdl.getBasicInfo(url);
-  const msg = makeMsgEmbed('Current playing');
-  msg.setImage(info.videoDetails.embed.iframeUrl);
-  msg.addField('title', info.videoDetails.title);
+
+  dispatcher.setVolumeLogarithmic(0.5);
   message.react('✅');
-  message.reply(msg);
   dispatcher.on('finish', async () => await playFromQueue(voiceChannel, message, queue));
 }
 
@@ -107,10 +104,9 @@ export function showCmdHandler(message: Message, queue: Queue<VideoEntry>) {
 }
 
 export function popCmdHandler(message: Message, queue: Queue<VideoEntry>) {
-  if (queue.isEmpty()) {
-    return;
+  if (!queue.isEmpty()) {
+    queue.dequeue();
   }
-  queue.dequeue();
   message.react('✅');
 }
 
