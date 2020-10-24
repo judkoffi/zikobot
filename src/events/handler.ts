@@ -4,7 +4,7 @@ import { Queue } from 'typescript-collections';
 import * as urlRegex from 'url-regex';
 import yts from 'yt-search';
 import * as ytdl from 'ytdl-core';
-import { Entry } from '../model/entry';
+import { VideoEntry } from '../model/entry';
 import { Helper, makeMsgEmbed } from '../utils/helper';
 
 export async function searchCmdHandler(message: Message) {
@@ -27,7 +27,7 @@ export async function searchCmdHandler(message: Message) {
   message.reply(msg);
 }
 
-export async function play(voiceChannel: VoiceChannel, message: Message, url: string, queue: Queue<Entry>): Promise<void> {
+export async function play(voiceChannel: VoiceChannel, message: Message, url: string, queue: Queue<VideoEntry>): Promise<void> {
   if (!voiceChannel) {
     message.reply('Please join a voice channel first!');
     return;
@@ -46,7 +46,7 @@ export async function play(voiceChannel: VoiceChannel, message: Message, url: st
   dispatcher.on('finish', async () => await playFromQueue(voiceChannel, message, queue));
 }
 
-export async function playFromQueue(voiceChannel: VoiceChannel, message: Message, queue: Queue<Entry>): Promise<void> {
+export async function playFromQueue(voiceChannel: VoiceChannel, message: Message, queue: Queue<VideoEntry>): Promise<void> {
   if (!queue.peek()) {
     message.member?.voice.channel?.leave();
     return;
@@ -56,7 +56,7 @@ export async function playFromQueue(voiceChannel: VoiceChannel, message: Message
   play(voiceChannel, message, entry.getUrl(), queue);
 }
 
-export function queueCmdHandler(message: Message, queue: Queue<Entry>): void {
+export function queueCmdHandler(message: Message, queue: Queue<VideoEntry>): void {
   const args = message.content.split(' ');
   if (args.length < 2) {
     const str = `${Helper.PREFIX}queue {video url}`;
@@ -69,11 +69,11 @@ export function queueCmdHandler(message: Message, queue: Queue<Entry>): void {
     message.reply(makeMsgEmbed('usage', '``` url invalid```'));
     return;
   }
-  const result = queue.add(new Entry(url, message.author.tag));
+  const result = queue.add(new VideoEntry(url, message.author.tag));
   result ? message.react('✅') : message.react('❎');
 }
 
-export function queueFromCmdHandler(message: Message, queue: Queue<Entry>): void {
+export function queueFromCmdHandler(message: Message, queue: Queue<VideoEntry>): void {
   const args = message.content.split(' ');
   if (args.length < 2) {
     const str = `${Helper.PREFIX}queuefrom video url1, video url2, ..., video url 3`;
@@ -86,14 +86,14 @@ export function queueFromCmdHandler(message: Message, queue: Queue<Entry>): void
   for (let i = 2; i < args.length; i++) {
     const url = args[i].split(',')[0];
     if (urlRegex.default().test(url)) {
-      success &&= queue.add(new Entry(url, message.author.tag));
+      success &&= queue.add(new VideoEntry(url, message.author.tag));
     }
   }
   success ? message.react('✅') : message.react('❎');
 }
 
 
-export function showCmdHandler(message: Message, queue: Queue<Entry>) {
+export function showCmdHandler(message: Message, queue: Queue<VideoEntry>) {
   if (queue.isEmpty()) {
     message.reply(makeMsgEmbed('result', 'Playlist is empty'));
     return;
@@ -106,7 +106,16 @@ export function showCmdHandler(message: Message, queue: Queue<Entry>) {
   message.reply(msg);
 }
 
-export async function playCmdHandler(message: Message, queue: Queue<Entry>) {
+export function popCmdHandler(message: Message, queue: Queue<VideoEntry>) {
+  if (queue.isEmpty()) {
+    return;
+  }
+  queue.dequeue();
+  message.react('✅');
+}
+
+
+export async function playCmdHandler(message: Message, queue: Queue<VideoEntry>) {
   const args = message.content.split(' ');
   if (args.length < 2) {
     const str = `${Helper.PREFIX}play {video url}`;

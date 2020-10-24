@@ -1,4 +1,4 @@
-export class Entry {
+export class VideoEntry {
   private url: string;
   private author: string;
 

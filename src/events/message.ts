@@ -1,10 +1,10 @@
 import { Client, Message } from 'discord.js';
 import { Queue } from 'typescript-collections';
-import { Entry } from '../model/entry';
+import { VideoEntry } from '../model/entry';
 import { getHelpMessage, Helper } from '../utils/helper';
-import { playCmdHandler, playFromQueue, queueCmdHandler, searchCmdHandler, showCmdHandler, queueFromCmdHandler } from './handler';
+import { playCmdHandler, playFromQueue, popCmdHandler, queueCmdHandler, queueFromCmdHandler, searchCmdHandler, showCmdHandler } from './handler';
 
-const queue: Queue<Entry> = new Queue();
+const queue: Queue<VideoEntry> = new Queue();
 
 export async function messageHandler(message: Message, client: Client) {
   if (message.channel.type !== 'text')
@@ -73,6 +73,12 @@ export async function messageHandler(message: Message, client: Client) {
 
     case 'search': {
       searchCmdHandler(message);
+      break;
+    }
+
+
+    case 'pop': {
+      popCmdHandler(message, queue);
       break;
     }
 
