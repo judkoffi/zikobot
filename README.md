@@ -8,25 +8,25 @@ Commands prefix is ```?```
 ## Supported commands are:
 ```
 - ?help: display help
-- ?search {title}: search video by title
-- ?queue {url}: add new video in playlist
-- ?play {url}: play music from given url
+- ?search title someText anotherText: search video by title
+- ?queue url: add new video in playlist
+- ?queuefrom url1, url2, url3, ..., urln`, value: 'Build queue from all urls'
+- ?play url: play music from given url
 - ?start: start playlist listening
 - ?show: show content of current playlist
 - ?stop: stop music and leave voice channel
 - ?next: play next song in playlist
 - ?pause: pause current playing music
 - ?resume: play paused music
+- ?pop: Remove first music from current playing
 ```
 
 ## Installation
 
 ### packages
 
-Using [yarn](https://yarnpkg.com/) to get necessary dependencies:
-
-    $ yarn install 
-
+Using [npm](https://www.npmjs.com/) to get necessary dependencies:
+    $ npm install 
 ---
 
 ### token
@@ -40,10 +40,10 @@ BOT_TOKEN=YOUR_BOT_TOKEN
 ### run
 - execute following command to run bot
 ```
-$ yarn start 
+$ npm start 
 ```
 
 - execute following command to run bot with live reload
 ```
-$ yarn run dev
+$ npm run dev
 ```
