@@ -18,18 +18,12 @@ export class Helper {
   static PREFIX = '?';
 
   static FIELDS: EmbedFieldData[] = [
-    { name: `${Helper.PREFIX}help`, value: 'Display help' },
-    { name: `${Helper.PREFIX}search text text text`, value: 'Search video by text' },
-    { name: `${Helper.PREFIX}play url`, value: 'Play music from given url' },
-    { name: `${Helper.PREFIX}queue url`, value: 'Add new video in playlist' },
-    { name: `${Helper.PREFIX}queuefrom url1, url2, url3, ..., urln`, value: 'Build queue from all urls' },
-    { name: `${Helper.PREFIX}start`, value: 'Start playlist listening' },
+    { name: `${Helper.PREFIX}h`, value: 'Display help' },
+    { name: `${Helper.PREFIX}p text text text`, value: 'Play music from given information' },
+    { name: `${Helper.PREFIX}n`, value: 'Play next song in queue' },
+    { name: `${Helper.PREFIX}queue text text text`, value: 'Add new video in playlist' },
     { name: `${Helper.PREFIX}show`, value: 'Show content of current playlist', inline: true },
-    { name: `${Helper.PREFIX}stop`, value: 'Stop music and leave voice channel', inline: true },
-    { name: `${Helper.PREFIX}next`, value: 'Play next song in playlist', inline: true },
-    { name: `${Helper.PREFIX}pause`, value: 'Pause current playing music', inline: true },
-    { name: `${Helper.PREFIX}pop`, value: 'Remove first music from current playing', inline: true },
-    { name: `${Helper.PREFIX}resume`, value: 'Play paused music', inline: true },
+    { name: `${Helper.PREFIX}bye`, value: 'Stop music and leave voice channel', inline: true },
   ];
 }
 
