@@ -1,0 +1,103 @@
+import { Message, VoiceChannel } from 'discord.js';
+import { Queue } from 'typescript-collections';
+import yts from 'yt-search';
+import ytdl from 'ytdl-core-discord';
+import { MapEntry, VideoEntry } from './model/entry';
+import { Helper, makeMsgEmbed } from './utils/helper';
+
+
+export async function playFromQueue(voiceChannel: VoiceChannel, message: Message, queue: Queue<VideoEntry>): Promise<void> {
+  if (!queue.peek()) {
+    message.member?.voice?.channel?.leave();
+    return;
+  }
+
+  let targetUrl = queue.dequeue();
+  play(voiceChannel, message, targetUrl.getUrl(), queue);
+}
+
+
+export async function playCmdHandler(message: Message, map: Map<String, MapEntry>) {
+  const query: string = extractQuery(message);
+  if (!query) {
+    const str = `${Helper.PREFIX}p text text text`;
+    message.reply(makeMsgEmbed('usage', str));
+    return;
+  }
+
+  let userId = message.guild.id;
+
+  if (!map.get(userId)) {
+    map.set(userId, {
+      voiceChannel: message.member?.voice?.channel,
+      connection: null,
+      volume: 5,
+      playing: true,
+      songs: [],
+      textChannel: message.channel
+    });
+  }
+
+  let value = map.get(userId);
+
+  const searchResult = await yts(query);
+  const video = searchResult.videos.slice(0, 10).shift(); // take first result
+
+  //await play(voiceChannel, message, video.url, queue);
+
+  message.react('✅');
+}
+
+export async function queueCmdHandler(message: Message, map: Map<String, MapEntry>) {
+  /*
+  const query: string = extractQuery(message);
+  if (!query) {
+    const str = `${Helper.PREFIX}q text text text`;
+    message.reply(makeMsgEmbed('usage', str));
+    return;
+  }
+
+  const searchResult = await yts(query);
+  const video = searchResult.videos.slice(0, 10).shift(); // take first result
+
+  const result = queue.add(new VideoEntry(video.url, message.author.tag, video.title));
+  result ? message.react('✅') : message.react('❎');
+  */
+}
+
+
+
+export async function play(voiceChannel: VoiceChannel, message: Message, url: string, queue: Queue<VideoEntry>): Promise<void> {
+  if (!voiceChannel) {
+    message.reply('Please join a voice channel first!');
+    return;
+  }
+
+  const connection = await voiceChannel.join();
+  const stream = await ytdl(url, {
+    filter: 'audioonly'
+  });
+
+  const playing = connection.play(stream, { type: 'opus' });
+
+  playing.on('finish', async () => await playFromQueue(voiceChannel, message, queue));
+  playing.setVolumeLogarithmic(0.5);
+
+  message.react('✅');
+}
+
+/**************** Helpers *****************/
+function extractQuery(message: Message): string {
+  const parameters: string[] = message.content.slice(Helper.PREFIX.length).trim().split(/ +/g);
+  parameters.shift(); // remove command
+
+  if (parameters.length < 2) {
+    return null;
+  }
+
+  return parameters.reduce((p, c) => p + ' ' + c);
+}
+
+function setMapInfo(id: String, map: Map<String, MapEntry>): void {
+
+}

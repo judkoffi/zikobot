@@ -1,13 +1,12 @@
-import { Client, Message } from 'discord.js';
-import { Queue } from 'typescript-collections';
-import { VideoEntry } from '../model/entry';
-import { getHelpMessage, Helper } from '../utils/helper';
-import { playCmdHandler } from './handler';
+import { Message } from 'discord.js';
+import { playCmdHandler, queueCmdHandler } from './handler';
+import { getHelpMessage, Helper } from './utils/helper';
 
-const queue: Queue<VideoEntry> = new Queue();
+export async function messageHandler(message: Message, map: Map<String, any>) {
+  if (message.author.bot || message.channel.type !== 'text')
+    return;
 
-export async function messageHandler(message: Message, client: Client) {
-  if (message.channel.type !== 'text')
+  if (!message.content.startsWith(Helper.PREFIX))
     return;
 
   const args = message.content.slice(Helper.PREFIX.length).trim().split(/ +/g);
@@ -30,7 +29,12 @@ export async function messageHandler(message: Message, client: Client) {
     }
 
     case 'p': {
-      playCmdHandler(message, queue);
+      playCmdHandler(message, map);
+      break;
+    }
+
+    case 'q': {
+      queueCmdHandler(message, map);
       break;
     }
 
