@@ -1,23 +1,12 @@
-import { Message, VoiceChannel } from 'discord.js';
-import { Queue } from 'typescript-collections';
+import { Message } from 'discord.js';
 import yts from 'yt-search';
 import ytdl from 'ytdl-core-discord';
-import { MapEntry, VideoEntry } from './model/entry';
+import { GuildEntry as GuildEntry, VideoInfo as VideoInfo } from './model/entry';
 import { Helper, makeMsgEmbed } from './utils/helper';
 
 
-export async function playFromQueue(voiceChannel: VoiceChannel, message: Message, queue: Queue<VideoEntry>): Promise<void> {
-  if (!queue.peek()) {
-    message.member?.voice?.channel?.leave();
-    return;
-  }
 
-  let targetUrl = queue.dequeue();
-  play(voiceChannel, message, targetUrl.getUrl(), queue);
-}
-
-
-export async function playCmdHandler(message: Message, map: Map<String, MapEntry>) {
+export async function playCmdHandler(message: Message, map: Map<string, GuildEntry>) {
   const query: string = extractQuery(message);
   if (!query) {
     const str = `${Helper.PREFIX}p text text text`;
@@ -25,66 +14,61 @@ export async function playCmdHandler(message: Message, map: Map<String, MapEntry
     return;
   }
 
-  let userId = message.guild.id;
+  const guildId = message.guild.id;
 
-  if (!map.get(userId)) {
-    map.set(userId, {
+  if (!map.get(guildId)) {
+    map.set(guildId, {
       voiceChannel: message.member?.voice?.channel,
       connection: null,
       volume: 5,
-      playing: true,
+      playing: false,
       songs: [],
       textChannel: message.channel
     });
   }
 
-  let value = map.get(userId);
+  const value = map.get(guildId);
 
   const searchResult = await yts(query);
   const video = searchResult.videos.slice(0, 10).shift(); // take first result
+  if (!video) {
+    message.reply(makeMsgEmbed('', 'No result found'));
+    return;
+  }
 
-  //await play(voiceChannel, message, video.url, queue);
+  const song = new VideoInfo(video.url, message.author.username, video.title);
+  value.connection = await message.member.voice.channel.join();
+  map.set(guildId, value);
+
+  if (!value.playing) {
+    await play(message, song, map);
+  } else {
+    value.songs.push(song);
+    console.log(value.songs);
+  }
 
   message.react('✅');
 }
 
-export async function queueCmdHandler(message: Message, map: Map<String, MapEntry>) {
-  /*
-  const query: string = extractQuery(message);
-  if (!query) {
-    const str = `${Helper.PREFIX}q text text text`;
-    message.reply(makeMsgEmbed('usage', str));
-    return;
-  }
 
-  const searchResult = await yts(query);
-  const video = searchResult.videos.slice(0, 10).shift(); // take first result
+async function play(message: Message, song: VideoInfo, map: Map<string, GuildEntry>): Promise<void> {
+  const guildId = message.guild.id;
+  const value: GuildEntry = map.get(guildId);
 
-  const result = queue.add(new VideoEntry(video.url, message.author.tag, video.title));
-  result ? message.react('✅') : message.react('❎');
-  */
-}
-
-
-
-export async function play(voiceChannel: VoiceChannel, message: Message, url: string, queue: Queue<VideoEntry>): Promise<void> {
-  if (!voiceChannel) {
-    message.reply('Please join a voice channel first!');
-    return;
-  }
-
-  const connection = await voiceChannel.join();
-  const stream = await ytdl(url, {
-    filter: 'audioonly'
-  });
+  const connection = value.connection;
+  const stream = await ytdl(song.getUrl(), { filter: 'audioonly' });
 
   const playing = connection.play(stream, { type: 'opus' });
+  value.playing = true;
+  playing.on('finish', async () => {
+    const nextSong = value.songs.shift();
+    await play(message, nextSong, map);
+  });
 
-  playing.on('finish', async () => await playFromQueue(voiceChannel, message, queue));
   playing.setVolumeLogarithmic(0.5);
-
   message.react('✅');
 }
+
 
 /**************** Helpers *****************/
 function extractQuery(message: Message): string {
@@ -96,8 +80,4 @@ function extractQuery(message: Message): string {
   }
 
   return parameters.reduce((p, c) => p + ' ' + c);
-}
-
-function setMapInfo(id: String, map: Map<String, MapEntry>): void {
-
 }

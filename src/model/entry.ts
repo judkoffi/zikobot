@@ -1,5 +1,5 @@
-import { Channel, VoiceChannel } from 'discord.js';
-export class VideoEntry {
+import { Channel, VoiceChannel, VoiceConnection } from 'discord.js';
+export class VideoInfo {
   private url: string;
   private title: string;
 
@@ -24,11 +24,11 @@ export class VideoEntry {
 }
 
 
-export interface MapEntry {
+export interface GuildEntry {
   textChannel: Channel,
   voiceChannel: VoiceChannel,
-  connection: null,
-  songs: [],
+  connection: VoiceConnection,
+  songs: VideoInfo[],
   volume: 5,
-  playing: true
+  playing: boolean
 }

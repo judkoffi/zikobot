@@ -1,8 +1,9 @@
 import { Message } from 'discord.js';
-import { playCmdHandler, queueCmdHandler } from './handler';
+import { playCmdHandler } from './handler';
+import { GuildEntry } from './model/entry';
 import { getHelpMessage, Helper } from './utils/helper';
 
-export async function messageHandler(message: Message, map: Map<String, any>) {
+export async function messageHandler(message: Message, map: Map<string, GuildEntry>) {
   if (message.author.bot || message.channel.type !== 'text')
     return;
 
@@ -12,6 +13,8 @@ export async function messageHandler(message: Message, map: Map<String, any>) {
   const args = message.content.slice(Helper.PREFIX.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
 
+
+  console.log('current guild id ' + message.guild.id);
   /*
    static FIELDS: EmbedFieldData[] = [
     { name: `${Helper.PREFIX}h`, value: 'Display help' },
@@ -30,11 +33,6 @@ export async function messageHandler(message: Message, map: Map<String, any>) {
 
     case 'p': {
       playCmdHandler(message, map);
-      break;
-    }
-
-    case 'q': {
-      queueCmdHandler(message, map);
       break;
     }
 

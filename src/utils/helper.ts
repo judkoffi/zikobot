@@ -4,6 +4,8 @@ export function getRandomColor(): ColorResolvable {
   return Math.floor(Math.random() * 16777215).toString(16);
 }
 
+export const URL_PATTERN = /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi;
+
 export function getHelpMessage(): MessageEmbed {
   return new MessageEmbed()
     .setColor(getRandomColor())
@@ -21,7 +23,6 @@ export class Helper {
     { name: `${Helper.PREFIX}h`, value: 'Display help' },
     { name: `${Helper.PREFIX}p text text text`, value: 'Play music from given information' },
     { name: `${Helper.PREFIX}n`, value: 'Play next song in queue' },
-    { name: `${Helper.PREFIX}queue text text text`, value: 'Add new video in playlist' },
     { name: `${Helper.PREFIX}show`, value: 'Show content of current playlist', inline: true },
     { name: `${Helper.PREFIX}bye`, value: 'Stop music and leave voice channel', inline: true },
   ];
