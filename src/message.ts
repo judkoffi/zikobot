@@ -1,20 +1,24 @@
-import { Message } from 'discord.js';
-import { playCmdHandler } from './handler';
-import { GuildEntry } from './model/entry';
-import { getHelpMessage, Helper } from './utils/helper';
+import { Message } from "discord.js";
+import {
+  nextCmdHandler,
+  playCmdHandler,
+  showCmdHandler,
+  stopCmdHandler
+} from "./handler";
+import { GuildEntry } from "./model/entry";
+import { getHelpMessage, Helper } from "./utils/helper";
 
-export async function messageHandler(message: Message, map: Map<string, GuildEntry>) {
-  if (message.author.bot || message.channel.type !== 'text')
-    return;
+export async function messageHandler(
+  message: Message,
+  map: Map<string, GuildEntry>
+) {
+  if (message.author.bot || message.channel.type !== "text") return;
 
-  if (!message.content.startsWith(Helper.PREFIX))
-    return;
+  if (!message.content.startsWith(Helper.PREFIX)) return;
 
   const args = message.content.slice(Helper.PREFIX.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
 
-
-  console.log('current guild id ' + message.guild.id);
   /*
    static FIELDS: EmbedFieldData[] = [
     { name: `${Helper.PREFIX}h`, value: 'Display help' },
@@ -26,19 +30,31 @@ export async function messageHandler(message: Message, map: Map<string, GuildEnt
   ];*/
 
   switch (command) {
-    case 'h': {
+    case "h": {
       message.reply(getHelpMessage());
       break;
     }
 
-    case 'p': {
+    case "p": {
       playCmdHandler(message, map);
       break;
     }
 
+    case "n": {
+      nextCmdHandler(message, map);
+      break;
+    }
+    case "show": {
+      showCmdHandler(message, map);
+      break;
+    }
+
+    case "stop": {
+      stopCmdHandler(message, map);
+      break;
+    }
     default: {
       break;
     }
   }
 }
-
