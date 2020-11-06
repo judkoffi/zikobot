@@ -1,4 +1,4 @@
-import { ColorResolvable, EmbedFieldData, MessageEmbed } from 'discord.js';
+import { ColorResolvable, EmbedFieldData, MessageEmbed } from "discord.js";
 
 export function getRandomColor(): ColorResolvable {
   return Math.floor(Math.random() * 16777215).toString(16);
@@ -7,37 +7,41 @@ export function getRandomColor(): ColorResolvable {
 export function getHelpMessage(): MessageEmbed {
   return new MessageEmbed()
     .setColor(getRandomColor())
-    .attachFiles(['assets/vinyl.png'])
-    .setThumbnail('attachment://vinyl.png')
-    .setTitle('Commands')
+    .attachFiles(["assets/vinyl.png"])
+    .setThumbnail("attachment://vinyl.png")
+    .setTitle("Commands")
     .addFields(Helper.FIELDS)
     .setTimestamp();
 }
 
 export class Helper {
-  static PREFIX = '?';
+  static PREFIX = "?";
 
   static FIELDS: EmbedFieldData[] = [
-    { name: `${Helper.PREFIX}help`, value: 'Display help' },
-    { name: `${Helper.PREFIX}search text text text`, value: 'Search video by text' },
-    { name: `${Helper.PREFIX}play url`, value: 'Play music from given url' },
-    { name: `${Helper.PREFIX}queue url`, value: 'Add new video in playlist' },
-    { name: `${Helper.PREFIX}queuefrom url1, url2, url3, ..., urln`, value: 'Build queue from all urls' },
-    { name: `${Helper.PREFIX}start`, value: 'Start playlist listening' },
-    { name: `${Helper.PREFIX}show`, value: 'Show content of current playlist', inline: true },
-    { name: `${Helper.PREFIX}stop`, value: 'Stop music and leave voice channel', inline: true },
-    { name: `${Helper.PREFIX}next`, value: 'Play next song in playlist', inline: true },
-    { name: `${Helper.PREFIX}pause`, value: 'Pause current playing music', inline: true },
-    { name: `${Helper.PREFIX}pop`, value: 'Remove first music from current playing', inline: true },
-    { name: `${Helper.PREFIX}resume`, value: 'Play paused music', inline: true },
+    { name: `${Helper.PREFIX}h`, value: "Display help" },
+    {
+      name: `${Helper.PREFIX}p text text text`,
+      value: "Play music from given information",
+    },
+    { name: `${Helper.PREFIX}n`, value: "Play next song in queue" },
+    {
+      name: `${Helper.PREFIX}show`,
+      value: "Show content of current playlist",
+      inline: true,
+    },
+    {
+      name: `${Helper.PREFIX}bye`,
+      value: "Stop music and leave voice channel",
+      inline: true,
+    },
   ];
 }
 
 export function makeMsgEmbed(title: string, description?: string, fields?: []) {
   const msg = new MessageEmbed()
     .setColor(getRandomColor())
-    .attachFiles(['assets/vinyl.png'])
-    .setThumbnail('attachment://vinyl.png')
+    .attachFiles(["assets/vinyl.png"])
+    .setThumbnail("attachment://vinyl.png")
     .setTitle(title)
     .setTimestamp();
 
@@ -46,7 +50,7 @@ export function makeMsgEmbed(title: string, description?: string, fields?: []) {
   }
 
   if (fields) {
-    msg.addFields(fields)
+    msg.addFields(fields);
   }
   return msg;
 }
