@@ -1,10 +1,14 @@
 import { Message } from "discord.js";
 import {
   nextCmdHandler,
-  playCmdHandler,
-  showCmdHandler,
-  stopCmdHandler,
-  pauseCmdHandler
+
+
+
+  pauseCmdHandler, playCmdHandler,
+
+
+  resumeCmdHandler, showCmdHandler,
+  stopCmdHandler
 } from "./handler";
 import { GuildEntry } from "./model/entry";
 import { getHelpMessage, Helper } from "./utils/helper";
@@ -33,6 +37,10 @@ export async function messageHandler(
 
     case "pause": {
       pauseCmdHandler(message, map);
+      break;
+    }
+    case "resume": {
+      resumeCmdHandler(message, map);
       break;
     }
 
