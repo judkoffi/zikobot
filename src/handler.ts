@@ -95,12 +95,13 @@ export async function stopCmdHandler(
   map: Map<string, GuildEntry>
 ) {
   const value = map.get(message.guild.id);
-  if (!value || value.songs.length === 0) {
+  if (!value) {
     message.react("❎");
     return;
   }
 
-  message?.member?.voice?.channel?.leave();
+  value.voiceChannel.leave();
+  map.delete(message.guild.id);
   message.react("🖖");
 }
 
@@ -113,20 +114,25 @@ async function play(
   const value: GuildEntry = map.get(guildId);
 
   const connection = value.connection;
-  const stream = await ytdl(song.getUrl(), { filter: "audioonly" });
+  try {
+    const stream = await ytdl(song.getUrl(), { filter: "audioonly" });
 
-  const playing = connection.play(stream, { type: "opus" });
-  value.playing = true;
-  playing.on("finish", async () => {
-    if (value.songs.length === 0) {
-      value.playing = false;
-      return;
-    }
-    const nextSong = value.songs.shift();
-    await play(message, nextSong, map);
-  });
+    const playing = connection.play(stream, { type: "opus" });
+    value.playing = true;
+    playing.on("finish", async () => {
+      if (value.songs.length === 0) {
+        value.playing = false;
+        return;
+      }
+      const nextSong = value.songs.shift();
+      await play(message, nextSong, map);
+    });
 
-  playing.setVolumeLogarithmic(0.5);
+    playing.setVolumeLogarithmic(0.5);
+  } catch (e) {
+    console.error(e);
+    message.react('');
+  }
 }
 
 /**************** Helpers *****************/

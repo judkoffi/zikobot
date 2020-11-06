@@ -49,10 +49,11 @@ export async function messageHandler(
       break;
     }
 
-    case "stop": {
+    case "bye": {
       stopCmdHandler(message, map);
       break;
     }
+
     default: {
       break;
     }
