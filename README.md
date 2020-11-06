@@ -7,18 +7,10 @@ Commands prefix is ```?```
 
 ## Supported commands are:
 ```
-- ?help: display help
-- ?search title someText anotherText: search video by title
-- ?queue url: add new video in playlist
-- ?queuefrom url1, url2, url3, ..., urln`, value: 'Build queue from all urls'
-- ?play url: play music from given url
-- ?start: start playlist listening
+- ?h: display help
+- ?p text text text ... text: search music and play from given text
 - ?show: show content of current playlist
-- ?stop: stop music and leave voice channel
-- ?next: play next song in playlist
-- ?pause: pause current playing music
-- ?resume: play paused music
-- ?pop: Remove first music from current playing
+- ?bye: play paused music
 ```
 
 ## Installation
