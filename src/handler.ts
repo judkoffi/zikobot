@@ -90,6 +90,34 @@ export async function nextCmdHandler(
   message.react("✅");
 }
 
+export function pauseCmdHandler(
+  message: Message,
+  map: Map<string, GuildEntry>
+) {
+  const value = map.get(message.guild.id);
+  if (!value) {
+    message.react("❎");
+    return;
+  }
+
+  value.connection?.dispatcher?.pause();
+  message.react("✅");
+}
+
+export function resumeCmdHandler(
+  message: Message,
+  map: Map<string, GuildEntry>
+) {
+  const value = map.get(message.guild.id);
+  if (!value) {
+    message.react("❎");
+    return;
+  }
+
+  value.connection?.dispatcher?.resume();
+  message.react("✅");
+}
+
 export async function stopCmdHandler(
   message: Message,
   map: Map<string, GuildEntry>
