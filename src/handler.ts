@@ -4,10 +4,7 @@ import ytdl from "ytdl-core-discord";
 import { GuildEntry, VideoInfo } from "./model/entry";
 import { Helper, makeMsgEmbed } from "./utils/helper";
 
-export async function playCmdHandler(
-  message: Message,
-  map: Map<string, GuildEntry>
-) {
+export async function playCmdHandler(message: Message, map: Map<string, GuildEntry>) {
   const query: string = extractQuery(message);
   if (!query) {
     const str = `${Helper.PREFIX}p text text text`;
@@ -57,10 +54,7 @@ export async function playCmdHandler(
   message.react("✅");
 }
 
-export async function showCmdHandler(
-  message: Message,
-  map: Map<string, GuildEntry>
-) {
+export async function showCmdHandler(message: Message, map: Map<string, GuildEntry>) {
   const value = map.get(message.guild.id);
   if (!value || value.songs.length === 0) {
     message.reply(makeMsgEmbed("result", "Playlist is empty"));
@@ -75,10 +69,7 @@ export async function showCmdHandler(
   message.reply(msg);
 }
 
-export async function nextCmdHandler(
-  message: Message,
-  map: Map<string, GuildEntry>
-) {
+export async function nextCmdHandler(message: Message, map: Map<string, GuildEntry>) {
   const value = map.get(message.guild.id);
   if (!value || value.songs.length === 0) {
     message.react("❎");
@@ -90,10 +81,7 @@ export async function nextCmdHandler(
   message.react("✅");
 }
 
-export function pauseCmdHandler(
-  message: Message,
-  map: Map<string, GuildEntry>
-) {
+export function pauseCmdHandler(message: Message, map: Map<string, GuildEntry>) {
   const value = map.get(message.guild.id);
   if (!value) {
     message.react("❎");
@@ -104,10 +92,7 @@ export function pauseCmdHandler(
   message.react("✅");
 }
 
-export function resumeCmdHandler(
-  message: Message,
-  map: Map<string, GuildEntry>
-) {
+export function resumeCmdHandler(message: Message, map: Map<string, GuildEntry>) {
   const value = map.get(message.guild.id);
   if (!value) {
     message.react("❎");
@@ -118,10 +103,7 @@ export function resumeCmdHandler(
   message.react("✅");
 }
 
-export async function stopCmdHandler(
-  message: Message,
-  map: Map<string, GuildEntry>
-) {
+export async function stopCmdHandler(message: Message, map: Map<string, GuildEntry>) {
   const value = map.get(message.guild.id);
   if (!value) {
     message.react("❎");
@@ -133,17 +115,14 @@ export async function stopCmdHandler(
   message.react("🖖");
 }
 
-async function play(
-  message: Message,
-  song: VideoInfo,
-  map: Map<string, GuildEntry>
-): Promise<void> {
+async function play(message: Message, song: VideoInfo, map: Map<string, GuildEntry>): Promise<void> {
   const guildId = message.guild.id;
   const value: GuildEntry = map.get(guildId);
 
   const connection = value.connection;
   try {
     const stream = await ytdl(song.getUrl(), { filter: "audioonly" });
+    console.log(song.getUrl());
 
     const playing = connection.play(stream, { type: "opus" });
     value.playing = true;
@@ -158,8 +137,8 @@ async function play(
 
     playing.setVolumeLogarithmic(0.5);
   } catch (e) {
-    console.error(e);
-    message.react('');
+    console.error(e.message);
+    message.react("❎");
   }
 }
 

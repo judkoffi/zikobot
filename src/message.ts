@@ -1,65 +1,20 @@
 import { Message } from "discord.js";
-import {
-  nextCmdHandler,
-
-
-
-  pauseCmdHandler, playCmdHandler,
-
-
-  resumeCmdHandler, showCmdHandler,
-  stopCmdHandler
-} from "./handler";
+import { parseCommand } from "./model/command";
 import { GuildEntry } from "./model/entry";
-import { getHelpMessage, Helper } from "./utils/helper";
+import { Helper } from "./utils/helper";
+import { CommandVisitor, VisitorHandler } from "./visitor";
 
-export async function messageHandler(
-  message: Message,
-  map: Map<string, GuildEntry>
-) {
-  if (message.author.bot || message.channel.type !== "text") return;
+export async function messageHandler(message: Message, map: Map<string, GuildEntry>) {
+  if (message.author.bot || message.channel.type !== "text")
+    return;
 
-  if (!message.content.startsWith(Helper.PREFIX)) return;
+  if (!message.content.startsWith(Helper.PREFIX))
+    return;
 
   const args = message.content.slice(Helper.PREFIX.length).trim().split(/ +/g);
-  const command = args.shift().toLowerCase();
+  const command = parseCommand(args, message, map);
 
-  switch (command) {
-    case "h": {
-      message.reply(getHelpMessage());
-      break;
-    }
-
-    case "p": {
-      playCmdHandler(message, map);
-      break;
-    }
-
-    case "pause": {
-      pauseCmdHandler(message, map);
-      break;
-    }
-    case "resume": {
-      resumeCmdHandler(message, map);
-      break;
-    }
-
-    case "n": {
-      nextCmdHandler(message, map);
-      break;
-    }
-    case "show": {
-      showCmdHandler(message, map);
-      break;
-    }
-
-    case "bye": {
-      stopCmdHandler(message, map);
-      break;
-    }
-
-    default: {
-      break;
-    }
-  }
+  let visitor = new VisitorHandler();
+  visitor.attach(command);
+  visitor.operate(new CommandVisitor());
 }

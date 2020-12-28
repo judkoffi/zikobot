@@ -18,7 +18,9 @@ Commands prefix is ```?```
 ### packages
 
 Using [npm](https://www.npmjs.com/) to get necessary dependencies:
-    $ npm install 
+```
+$ npm install 
+```
 ---
 
 ### token
