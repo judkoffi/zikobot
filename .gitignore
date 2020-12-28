@@ -3,3 +3,4 @@
 **/exe/
 **/.env
 **/package-lock.json
+**/*.tgz
