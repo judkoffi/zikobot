@@ -1,7 +1,12 @@
-import { Message } from "discord.js";
-import { nextCmdHandler, pauseCmdHandler, playCmdHandler, resumeCmdHandler, showCmdHandler, stopCmdHandler } from "./handler";
-import { ByeCommand, HelpCommand, NextCommand, PauseCommand, PlayCommand, ResumeCommand, ShowCommand } from "./model/command";
-import { getHelpMessage } from "./utils/helper";
+import { ByeCommand } from "../command/byeCommand";
+import { HelpCommand } from "../command/helpCommand";
+import { NextCommand } from "../command/nextCommand";
+import { PauseCommand } from "../command/pauseCommand";
+import { PlayCommand } from "../command/playCommand";
+import { ResumeCommand } from "../command/resumeCommand";
+import { ShowCommand } from "../command/showCommand";
+import { nextCmdHandler, pauseCmdHandler, playCmdHandler, resumeCmdHandler, showCmdHandler, stopCmdHandler } from "../handler";
+import { getHelpMessage } from "../utils/helper";
 
 export interface IVisitor {
   visitHelp(cmd: HelpCommand): void;
@@ -12,12 +17,6 @@ export interface IVisitor {
   visitNextCommand(cmd: NextCommand): void;
   visitResumeCommand(cmd: ResumeCommand): void;
 }
-
-export interface ICommand {
-  operate(visitor: IVisitor): void;
-  getMessage(): Message;
-}
-
 
 export class CommandVisitor implements IVisitor {
   public async visitPlayCommand(cmd: PlayCommand): Promise<void> {
@@ -50,26 +49,3 @@ export class CommandVisitor implements IVisitor {
   }
 }
 
-
-export class VisitorHandler {
-  private elements: ICommand[] = [];
-
-  public attach(e: ICommand): void {
-    this.elements.push(e);
-  }
-
-  public detach(e: ICommand): void {
-    var index = this.elements.indexOf(e);
-    if (!index) return;
-    this.elements.splice(index, 1);
-  }
-
-  public operate(visitor: IVisitor): void {
-    const max = this.elements.length;
-    for (let i = 0; i < max; i += 1) {
-      let elt = this.elements[i];
-      if (!elt) return;
-      elt.operate(visitor);
-    }
-  }
-}

@@ -1,8 +1,9 @@
 import { Message } from "discord.js";
-import { parseCommand } from "./model/command";
+import { parseCommand } from "./command/command";
 import { GuildEntry } from "./model/entry";
 import { Helper } from "./utils/helper";
-import { CommandVisitor, VisitorHandler } from "./visitor";
+import { CommandVisitor } from "./visitor/visitor";
+import { VisitorHandler } from "./visitor/visitorHandler";
 
 export async function messageHandler(message: Message, map: Map<string, GuildEntry>) {
   if (message.author.bot || message.channel.type !== "text")
@@ -14,7 +15,7 @@ export async function messageHandler(message: Message, map: Map<string, GuildEnt
   const args = message.content.slice(Helper.PREFIX.length).trim().split(/ +/g);
   const command = parseCommand(args, message, map);
 
-  let visitor = new VisitorHandler();
+  const visitor = new VisitorHandler();
   visitor.attach(command);
   visitor.operate(new CommandVisitor());
 }
