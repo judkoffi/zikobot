@@ -72,7 +72,7 @@ export async function showCmdHandler(message: Message, map: Map<string, GuildEnt
 export async function nextCmdHandler(message: Message, map: Map<string, GuildEntry>) {
   const value = map.get(message.guild.id);
   if (!value || value.songs.length === 0) {
-    message.react("❎");
+    message.react("❌");
     return;
   }
 
@@ -84,7 +84,7 @@ export async function nextCmdHandler(message: Message, map: Map<string, GuildEnt
 export function pauseCmdHandler(message: Message, map: Map<string, GuildEntry>) {
   const value = map.get(message.guild.id);
   if (!value) {
-    message.react("❎");
+    message.react("❌");
     return;
   }
 
@@ -95,7 +95,7 @@ export function pauseCmdHandler(message: Message, map: Map<string, GuildEntry>) 
 export function resumeCmdHandler(message: Message, map: Map<string, GuildEntry>) {
   const value = map.get(message.guild.id);
   if (!value) {
-    message.react("❎");
+    message.react("❌");
     return;
   }
 
@@ -106,7 +106,7 @@ export function resumeCmdHandler(message: Message, map: Map<string, GuildEntry>)
 export async function stopCmdHandler(message: Message, map: Map<string, GuildEntry>) {
   const value = map.get(message.guild.id);
   if (!value) {
-    message.react("❎");
+    message.react("❌");
     return;
   }
 
@@ -138,7 +138,7 @@ async function play(message: Message, song: VideoInfo, map: Map<string, GuildEnt
     playing.setVolumeLogarithmic(0.5);
   } catch (e) {
     console.error(e.message);
-    message.react("❎");
+    message.react("❌");
   }
 }
 

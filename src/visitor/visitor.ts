@@ -39,7 +39,6 @@ export class CommandVisitor implements IVisitor {
     await showCmdHandler(cmd.getMessage(), cmd.getMap());
   }
 
-
   public async visitByeCommand(cmd: ByeCommand): Promise<void> {
     await stopCmdHandler(cmd.getMessage(), cmd.getMap());
   }

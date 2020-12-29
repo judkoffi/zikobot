@@ -23,7 +23,18 @@ export class Helper {
       name: `${Helper.PREFIX}p text text text`,
       value: "Play music from given information",
     },
-    { name: `${Helper.PREFIX}n`, value: "Play next song in queue" },
+    {
+      name: `${Helper.PREFIX}n`,
+      value: "Play next song in queue"
+    },
+    {
+      name: `${Helper.PREFIX}pause`,
+      value: "Pause current music"
+    },
+    {
+      name: `${Helper.PREFIX}resume`,
+      value: `Re-play after ${Helper.PREFIX}pause command `
+    },
     {
       name: `${Helper.PREFIX}show`,
       value: "Show content of current playlist",
