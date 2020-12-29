@@ -1,18 +1,12 @@
 import { Message } from "discord.js";
+import fs from 'fs';
+import util from 'util';
 import yts from "yt-search";
 import ytdl from "ytdl-core-discord";
 import { GuildEntry, VideoInfo } from "./model/entry";
 import { Helper, makeMsgEmbed } from "./utils/helper";
 
-export async function playCmdHandler(message: Message, map: Map<string, GuildEntry>) {
-  const query: string = extractQuery(message);
-  if (!query) {
-    const str = `${Helper.PREFIX}p text text text`;
-    message.reply(makeMsgEmbed("usage", str));
-    message.react("🚨");
-    return;
-  }
-
+async function initCurrentGuildInfos(message: Message, map: Map<string, GuildEntry>) {
   if (!message.member?.voice?.channel) {
     message.reply("Please join a voice channel first!");
     return;
@@ -30,7 +24,19 @@ export async function playCmdHandler(message: Message, map: Map<string, GuildEnt
       textChannel: message.channel,
     });
   }
+}
 
+export async function playCmdHandler(message: Message, map: Map<string, GuildEntry>) {
+  const query: string = extractQuery(message);
+  if (!query) {
+    const str = `${Helper.PREFIX}p text text text`;
+    message.reply(makeMsgEmbed("usage", str));
+    message.react("🚨");
+    return;
+  }
+
+  await initCurrentGuildInfos(message, map);
+  const guildId = message.guild.id;
   const value = map.get(guildId);
 
   const searchResult = await yts(query);
@@ -48,7 +54,6 @@ export async function playCmdHandler(message: Message, map: Map<string, GuildEnt
     await play(message, song, map);
   } else {
     value.songs.push(song);
-    console.log(value.songs);
   }
 
   message.react("✅");
@@ -121,8 +126,8 @@ async function play(message: Message, song: VideoInfo, map: Map<string, GuildEnt
 
   const connection = value.connection;
   try {
-    const stream = await ytdl(song.getUrl(), { filter: "audioonly" });
     console.log(song.getUrl());
+    const stream = await ytdl(song.getUrl(), { filter: "audioonly" });
 
     const playing = connection.play(stream, { type: "opus" });
     value.playing = true;
@@ -142,6 +147,53 @@ async function play(message: Message, song: VideoInfo, map: Map<string, GuildEnt
   }
 }
 
+export async function listPlaylistHandler(message: Message, map: Map<string, GuildEntry>): Promise<void> {
+  try {
+    const exec = util.promisify(require('child_process').exec);
+    const { stdout, stderr } = await exec(`ls ${Helper.PLAYLIST_FOLDER}`);
+    const tokens: string[] = stdout.split('\n').filter((e: string) => e !== '');
+    const text = tokens.reduce((acc, v) => acc + '; ' + v);
+    const msg = "```" + text + "```";
+    message.reply(msg);
+  } catch (e) {
+    console.error(e.message);
+    message.react("❌");
+  }
+}
+
+export async function loadPlaylistHandler(message: Message, map: Map<string, GuildEntry>): Promise<void> {
+  try {
+    await initCurrentGuildInfos(message, map);
+
+    const guildId = message.guild.id;
+    const filename: string = `${Helper.PLAYLIST_FOLDER}/${extractQuery(message)}`;
+    const data: string = fs.readFileSync(filename, { encoding: 'utf-8' });
+    const lines = data.split(/\r?\n/);
+
+    const value = map.get(guildId);
+
+    lines.forEach(async (line) => {
+      if (line !== '') {
+        const searchResult = await yts(line);
+        const video = searchResult.videos.slice(0, 10).shift(); // take first result
+        if (video) {
+          const song = new VideoInfo(video.url, message.author.username, video.title);
+          value.songs.push(song);
+        }
+      }
+    });
+
+    if (!value.playing) {
+      value.connection = await message.member?.voice?.channel?.join();
+      await play(message, value.songs.shift(), map);
+    }
+    message.react("✅");
+  } catch (e) {
+    console.error(e.message);
+    message.react("❌");
+  }
+}
+
 /**************** Helpers *****************/
 function extractQuery(message: Message): string {
   const parameters: string[] = message.content
@@ -150,7 +202,7 @@ function extractQuery(message: Message): string {
     .split(/ +/g);
   parameters.shift(); // remove command
 
-  if (parameters.length < 2) {
+  if (parameters.length < 1) {
     return null;
   }
 

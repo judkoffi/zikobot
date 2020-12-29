@@ -4,3 +4,4 @@
 **/.env
 **/package-lock.json
 **/*.tgz
+**/users_playslists/

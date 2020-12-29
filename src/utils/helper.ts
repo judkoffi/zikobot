@@ -17,8 +17,10 @@ export function getHelpMessage(): MessageEmbed {
 export class Helper {
   static PREFIX = "?";
 
+  static PLAYLIST_FOLDER = "users_playslists";
+
   static FIELDS: EmbedFieldData[] = [
-    { name: `${Helper.PREFIX}h`, value: "Display help" },
+    { name: `${Helper.PREFIX}h or ${Helper.PREFIX}help`, value: "Display help" },
     {
       name: `${Helper.PREFIX}p text text text`,
       value: "Play music from given information",
@@ -34,6 +36,14 @@ export class Helper {
     {
       name: `${Helper.PREFIX}resume`,
       value: `Re-play after ${Helper.PREFIX}pause command `
+    },
+    {
+      name: `${Helper.PREFIX}playlists`,
+      value: `List saved playlists `
+    },
+    {
+      name: `${Helper.PREFIX}load {playlist name}`,
+      value: `play selected playlist `
     },
     {
       name: `${Helper.PREFIX}show`,

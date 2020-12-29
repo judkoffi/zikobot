@@ -3,6 +3,8 @@ import { GuildEntry } from "../model/entry";
 import { IVisitor } from "../visitor/visitor";
 import { ByeCommand } from "./byeCommand";
 import { HelpCommand } from "./helpCommand";
+import { ListPlaylistCommand } from "./listPlaylistCommand";
+import { LoadPlaylistCommand } from "./loadPlaylistCommand";
 import { NextCommand } from "./nextCommand";
 import { PauseCommand } from "./pauseCommand";
 import { PlayCommand } from "./playCommand";
@@ -17,7 +19,8 @@ export interface ICommand {
 export function parseCommand(args: string[], message: Message, map: Map<string, GuildEntry>): ICommand {
   const cmd = args.shift().toLowerCase();
   switch (cmd) {
-    case "h": {
+    case "h":
+    case "help": {
       return new HelpCommand(message, map);
     }
 
@@ -43,6 +46,14 @@ export function parseCommand(args: string[], message: Message, map: Map<string, 
 
     case "n": {
       return new NextCommand(message, map);
+    }
+
+    case "playlists": {
+      return new ListPlaylistCommand(message, map);
+    }
+
+    case "load": {
+      return new LoadPlaylistCommand(message, map);
     }
 
     default: {

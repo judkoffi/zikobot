@@ -1,14 +1,17 @@
 import { ByeCommand } from "../command/byeCommand";
 import { HelpCommand } from "../command/helpCommand";
+import { ListPlaylistCommand } from "../command/listPlaylistCommand";
+import { LoadPlaylistCommand } from "../command/loadPlaylistCommand";
 import { NextCommand } from "../command/nextCommand";
 import { PauseCommand } from "../command/pauseCommand";
 import { PlayCommand } from "../command/playCommand";
 import { ResumeCommand } from "../command/resumeCommand";
 import { ShowCommand } from "../command/showCommand";
-import { nextCmdHandler, pauseCmdHandler, playCmdHandler, resumeCmdHandler, showCmdHandler, stopCmdHandler } from "../handler";
+import { listPlaylistHandler, loadPlaylistHandler, nextCmdHandler, pauseCmdHandler, playCmdHandler, resumeCmdHandler, showCmdHandler, stopCmdHandler } from "../handler";
 import { getHelpMessage } from "../utils/helper";
 
 export interface IVisitor {
+  visitLoadPlaylistCommand(cmd: LoadPlaylistCommand): void;
   visitHelp(cmd: HelpCommand): void;
   visitShowCommand(cmd: ShowCommand): void;
   visitByeCommand(cmd: ByeCommand): void;
@@ -16,9 +19,18 @@ export interface IVisitor {
   visitPlayCommand(cmd: PlayCommand): void;
   visitNextCommand(cmd: NextCommand): void;
   visitResumeCommand(cmd: ResumeCommand): void;
+  visitListPlaylistCommand(cmd: ListPlaylistCommand): void;
 }
 
 export class CommandVisitor implements IVisitor {
+  public async visitLoadPlaylistCommand(cmd: LoadPlaylistCommand): Promise<void> {
+    await loadPlaylistHandler(cmd.getMessage(), cmd.getMap());
+  }
+
+  public async visitListPlaylistCommand(cmd: ListPlaylistCommand): Promise<void> {
+    await listPlaylistHandler(cmd.getMessage(), cmd.getMap());
+  }
+
   public async visitPlayCommand(cmd: PlayCommand): Promise<void> {
     await playCmdHandler(cmd.getMessage(), cmd.getMap());
   }
