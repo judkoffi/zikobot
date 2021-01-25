@@ -1,6 +1,6 @@
 # zikobot
 
-![Build Status](https://travis-ci.org/judkoffi/zikobot.svg?branch=master)
+![workflow status](https://github.com/judkoffi/zikobot/workflows/node.js.yml/badge.svg)
 
 Discord bot which can play music from youtube  
 Commands prefix is `?`
