@@ -1,6 +1,6 @@
 # zikobot
 
-![badge](https://action-badges.now.sh/JasonEtco/example-repo)
+![badge](https://action-badges.now.sh/judkoffi/zikobot)
 
 Discord bot which can play music from youtube  
 Commands prefix is `?`
